@@ -206,6 +206,12 @@ public class SlidingUpPanelLayout extends ViewGroup {
      */
     private boolean mIsUnableToDrag;
 
+    private boolean mIsForceEnableToDrag;
+
+    public void setForceEnableToDrag(boolean value){
+        mIsForceEnableToDrag = value;
+        mIsUnableToDrag = !mIsForceEnableToDrag;
+    }
     /**
      * Flag indicating that sliding feature is enabled\disabled
      */
@@ -895,13 +901,12 @@ public class SlidingUpPanelLayout extends ViewGroup {
         final float adx = Math.abs(x - mInitialMotionX);
         final float ady = Math.abs(y - mInitialMotionY);
         final int dragSlop = mDragHelper.getTouchSlop();
-
         switch (action) {
             case MotionEvent.ACTION_DOWN: {
                 mIsUnableToDrag = false;
                 mInitialMotionX = x;
                 mInitialMotionY = y;
-                if (!isViewUnder(mDragView, (int) x, (int) y)) {
+                if (!mIsForceEnableToDrag && !isViewUnder(mDragView, (int) x, (int) y)) {
                     mDragHelper.cancel();
                     mIsUnableToDrag = true;
                     return false;
@@ -911,7 +916,7 @@ public class SlidingUpPanelLayout extends ViewGroup {
             }
 
             case MotionEvent.ACTION_MOVE: {
-                if (ady > dragSlop && adx > ady) {
+                if (!mIsForceEnableToDrag && ady > dragSlop && adx > ady) {
                     mDragHelper.cancel();
                     mIsUnableToDrag = true;
                     return false;
@@ -938,7 +943,8 @@ public class SlidingUpPanelLayout extends ViewGroup {
                 }
                 break;
         }
-        return mDragHelper.shouldInterceptTouchEvent(ev);
+        boolean shouldIntercept =  mDragHelper.shouldInterceptTouchEvent(ev);
+        return shouldIntercept;
     }
 
     @Override
@@ -958,7 +964,6 @@ public class SlidingUpPanelLayout extends ViewGroup {
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         final int action = MotionEventCompat.getActionMasked(ev);
-
         if (!isEnabled() || !isTouchEnabled() || (mIsUnableToDrag && action != MotionEvent.ACTION_DOWN)) {
             mDragHelper.abort();
             return super.dispatchTouchEvent(ev);

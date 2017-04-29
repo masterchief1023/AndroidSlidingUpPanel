@@ -37,7 +37,21 @@ public class DemoActivity extends ActionBarActivity {
         setContentView(R.layout.activity_demo);
 
         setSupportActionBar((Toolbar) findViewById(R.id.main_toolbar));
-
+        View main = findViewById(R.id.main);
+        main.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mLayout.setPanelState(PanelState.EXPANDED);
+            }
+        });
+        main.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                mLayout.setForceEnableToDrag(true);
+                mLayout.setPanelState(PanelState.EXPANDED);
+                return true;
+            }
+        });
         ListView lv = (ListView) findViewById(R.id.list);
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -93,6 +107,9 @@ public class DemoActivity extends ActionBarActivity {
             @Override
             public void onPanelStateChanged(View panel, PanelState previousState, PanelState newState) {
                 Log.i(TAG, "onPanelStateChanged " + newState);
+                if(newState==PanelState.EXPANDED){
+                    mLayout.setForceEnableToDrag(false);
+                }
             }
         });
         mLayout.setFadeOnClickListener(new OnClickListener() {
