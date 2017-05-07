@@ -212,6 +212,12 @@ public class SlidingUpPanelLayout extends ViewGroup {
         mIsForceEnableToDrag = value;
         mIsUnableToDrag = !mIsForceEnableToDrag;
     }
+
+    private boolean mIsDisableClickDragview;
+
+    public void setDisableClickDragview(boolean value){
+        mIsDisableClickDragview = value;
+    }
     /**
      * Flag indicating that sliding feature is enabled\disabled
      */
@@ -549,7 +555,7 @@ public class SlidingUpPanelLayout extends ViewGroup {
             mDragView.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (!isEnabled() || !isTouchEnabled()) return;
+                    if (!isEnabled() || !isTouchEnabled() || mIsDisableClickDragview) return;
                     if (mSlideState != PanelState.EXPANDED && mSlideState != PanelState.ANCHORED) {
                         if (mAnchorPoint < 1.0f) {
                             setPanelState(PanelState.ANCHORED);
